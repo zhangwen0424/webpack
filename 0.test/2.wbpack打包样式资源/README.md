@@ -1,17 +1,17 @@
 <!--
  * @Date: 2021-09-24 10:24:03
  * @LastEditors: zhangwen
- * @LastEditTime: 2021-09-24 10:51:48
+ * @LastEditTime: 2021-09-24 16:20:00
  * @FilePath: /webpack/0.test/2.wbpack打包样式资源/README.md
 -->
 
-
-## 2.wbpack打包样式资源
+# 2.wbpack打包样式资源
 
 安装包
 yarn add css-loader style-loader less-loader less -D  
 webpack配置文件
-```
+
+```javascript
 /**
  * webpack.config.js  webpack的配置文件
  *    指定webpack指令要干什么

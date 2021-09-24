@@ -22,7 +22,7 @@ cd 0.test/1.webpack处理js和json
 
   index.js: webpack入口起点文件
 
-  1. 运行指令：
+  1.运行指令：
     开发环境：webpack ./src/index.js -o ./build/built.js --mode=development
       webpack会以 ./src/index.js 为入口文件开始打包，打包后输出到 ./build/built.js
       整体打包环境，是开发环境
@@ -30,7 +30,7 @@ cd 0.test/1.webpack处理js和json
       webpack会以 ./src/index.js 为入口文件开始打包，打包后输出到 ./build/built.js
       整体打包环境，是生产环境
 
-   2. 结论：
+  2.结论：
     1. webpack能处理js/json资源，不能处理css/img等其他资源
     2. 生产环境和开发环境将ES6模块化编译成浏览器能识别的模块化~
     3. 生产环境比开发环境多一个压缩js代码。
@@ -40,7 +40,8 @@ cd 0.test/1.webpack处理js和json
 安装包
 yarn add css-loader style-loader less-loader less -D  
 webpack配置文件
-```
+
+```javascript
 /**
  * webpack.config.js  webpack的配置文件
  *    指定webpack指令要干什么
@@ -97,12 +98,13 @@ module.exports = {
 
 ## [3.webpack打包html资源]((https://github.com/zhangwen0424/webpack/tree/master/0.test/3.webpack打包html资源))
 
-
-安装包
+安装包  
 yarn add html-webpack-plugin -D
 
-webpack配置
-```
+webpack配置  
+
+```javascript
+
 const { resolve } = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 

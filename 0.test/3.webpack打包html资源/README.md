@@ -1,18 +1,18 @@
 <!--
  * @Date: 2021-09-24 10:59:43
  * @LastEditors: zhangwen
- * @LastEditTime: 2021-09-24 15:45:48
+ * @LastEditTime: 2021-09-24 16:18:49
  * @FilePath: /webpack/0.test/3.webpack打包html资源/README.md
 -->
 
-## [3.webpack打包html资源]((https://github.com/zhangwen0424/webpack/tree/master/0.test/3.webpack打包html资源))
-
+# [3.webpack打包html资源]((https://github.com/zhangwen0424/webpack/tree/master/0.test/3.webpack打包html资源))
 
 安装包
 yarn add html-webpack-plugin -D
 
 webpack配置
-```
+
+```javascript
 const { resolve } = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
