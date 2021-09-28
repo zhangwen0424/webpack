@@ -16,9 +16,9 @@ yarn add webpack webpack-cli -D
 
 
 **4.进入指定项目开发**
-cd 0.test/1.webpack处理js和json
+cd 1.webpack处理js和json
 
-## [1.webpack处理js和json](https://github.com/zhangwen0424/webpack/tree/master/0.test/1.webpack处理js和json)
+## [1.webpack处理js和json](https://github.com/zhangwen0424/webpack/tree/master/1.webpack处理js和json)
 
   index.js: webpack入口起点文件
 
@@ -35,7 +35,7 @@ cd 0.test/1.webpack处理js和json
     2. 生产环境和开发环境将ES6模块化编译成浏览器能识别的模块化~
     3. 生产环境比开发环境多一个压缩js代码。
 
-## [2.wbpack打包样式资源](https://github.com/zhangwen0424/webpack/tree/master/0.test/2.wbpack打包样式资源)
+## [2.wbpack打包样式资源](https://github.com/zhangwen0424/webpack/tree/master/2.wbpack打包样式资源)
 
 安装包
 yarn add css-loader style-loader less-loader less -D  
@@ -96,7 +96,7 @@ module.exports = {
 
 ```
 
-## [3.webpack打包html资源](https://github.com/zhangwen0424/webpack/tree/master/0.test/3.webpack打包html资源)
+## [3.webpack打包html资源](https://github.com/zhangwen0424/webpack/tree/master/3.webpack打包html资源)
 
 安装包  
 yarn add html-webpack-plugin -D
@@ -129,7 +129,7 @@ module.exports = {
 
 ```
 
-## [5.webpack处理其他资源](https://github.com/zhangwen0424/webpack/tree/master/0.test/5.webpack处理其他资源)
+## [5.webpack处理其他资源](https://github.com/zhangwen0424/webpack/tree/master/5.webpack处理其他资源)
 
 webpack.config.js配置
 
@@ -138,7 +138,7 @@ webpack.config.js配置
  * @Date: 2021-09-26 15:16:34
  * @LastEditors: zhangwen
  * @LastEditTime: 2021-09-26 15:30:03
- * @FilePath: /webpack/0.test/5.webpack处理其他资源/webpack.config.js
+ * @FilePath: /webpack/5.webpack处理其他资源/webpack.config.js
  */
 const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
