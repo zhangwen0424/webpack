@@ -424,7 +424,7 @@ module.exports = {
 }
 ```
 
-## 8.提取css为单独文件
+## [8.提取css为单独文件](https://github.com/zhangwen0424/webpack/tree/master/8.提取css为单独文件)
 
 webpack.config.js
 
@@ -467,7 +467,7 @@ module.exports = {
 }
 ```
 
-## 9.css兼容性处理
+## [9.css兼容性处理](https://github.com/zhangwen0424/webpack/tree/master/9.css兼容性处理)
 
 webpack.config.js
 
@@ -544,4 +544,208 @@ module.exports = {
     // open: true,
   }
 }
+```
+
+## [10.css压缩](https://github.com/zhangwen0424/webpack/tree/master/10.css压缩)
+
+webpack.config.js
+
+```js
+const { resolve } = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const OptimizeCssAssetsWebpackPlugin = require("optimize-css-assets-webpack-plugin")
+
+module.exports = {
+  // mode: 'production',
+  mode: 'development',
+  entry: "./src/js/index.js",
+  output: {
+    filename: 'index.js',
+    path: resolve(__dirname, 'build'),
+    clean: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: ['postcss-preset-env']
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'css/main.css'
+    }),
+    new OptimizeCssAssetsWebpackPlugin(),
+  ],
+  devServer: {
+    static: resolve(__dirname, 'build'),
+    compress: true,
+    port: 5000,
+    open: true,
+  }
+}
+```
+
+## js语法检查
+
+## js兼容性处理
+
+## js压缩
+
+// 生产环境下会自动压缩js代码
+
+webpack.config.js
+
+```js
+module.exports = {
+  mode:"production"
+}
+```
+
+## [13.html压缩](https://github.com/zhangwen0424/webpack/tree/master/13.html压缩)
+
+webpack.config.js
+
+```js
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { resolve } = require("path");
+
+module.exports = {
+  mode: 'production',
+  entry: './src/js/index.js',
+  output: {
+    filename: 'js/main.js',
+    path: resolve(__dirname, 'build')
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+      // 压缩html代码
+      minify: {
+        // 移除空格
+        collapseWhitespace: true,
+        // 移除注释
+        removeComments: true,
+      }
+    })
+  ]
+}
+```
+
+## 生产环境配置
+
+## webpack优化环境配置
+
+```md
+# webpack性能优化
+* 开发环境性能优化
+* 生产环境性能优化
+
+## 开发环境性能优化
+* 优化打包构建速度
+  * HMR
+* 优化代码调试
+  * source-map
+
+## 生产环境性能优化
+* 优化打包构建速度
+  * oneOf
+  * babel缓存
+  * 多进程打包
+  * externals
+  * dll
+* 优化代码运行的性能
+  * 缓存(hash-chunkhash-contenthash)
+  * tree shaking
+  * code split
+  * 懒加载/预加载
+  * pwa
+```
+
+## HMR热模块替换
+
+webpack.config.js
+
+```js
+/*
+  HMR: hot module replacement 热模块替换 / 模块热替换
+    作用：一个模块发生变化，只会重新打包这一个模块（而不是打包所有模块） 
+      极大提升构建速度
+      
+      样式文件：可以使用HMR功能：因为style-loader内部实现了~
+      js文件：默认不能使用HMR功能 --> 需要修改js代码，添加支持HMR功能的代码
+        注意：HMR功能对js的处理，只能处理非入口js文件的其他文件。
+      html文件: 默认不能使用HMR功能.同时会导致问题：html文件不能热更新了~ （不用做HMR功能）
+        解决：修改entry入口，将html文件引入
+*/
+const { resolve } = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  mode: 'development',
+  entry: './src/js/index.js',
+  output: {
+    filename: 'js/main.js',
+    path: resolve(__dirname, 'build')
+  },
+  module: {
+    rules: [
+      {
+        // 处理css资源
+        test: /\.css/,
+        use: ['style-loader', 'css-loader']
+      },
+      {
+        // 处理less资源
+        test: /\.less/,
+        use: ['style-loader', 'css-loader', 'less-loader']
+      },
+      {
+        // 处理图片资源
+        test: /\.(jpg|png|gif)/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'imgs/[name].[hash:6][ext]'
+        }
+      },
+      {
+        // 处理html中img资源
+        test: /\.html/,
+        use: 'html-loader'
+      }
+    ]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    })
+  ],
+  // 启动devServer指令为：npx webpack-dev-server
+  devServer: {
+    static: resolve(__dirname, 'build'),
+    compress: true,
+    port: 3002,
+    // open: true,
+    // 开启HMR功能
+    // 当修改了webpack配置，新配置要想生效，必须重新webpack服务
+    hot: true,
+  }
+}
+```
 

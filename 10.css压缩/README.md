@@ -1,3 +1,8 @@
+# 10.css压缩
+
+webpack.config.js
+
+```js
 const { resolve } = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -47,3 +52,4 @@ module.exports = {
     open: true,
   }
 }
+```
