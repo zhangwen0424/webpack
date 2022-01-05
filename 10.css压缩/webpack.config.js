@@ -35,9 +35,11 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.html'
     }),
+    // 抽离css
     new MiniCssExtractPlugin({
       filename: 'css/main.css'
     }),
+    // 压缩css
     new OptimizeCssAssetsWebpackPlugin(),
   ],
   devServer: {

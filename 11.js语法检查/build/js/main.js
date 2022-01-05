@@ -13,20 +13,55 @@
 /*!*************************!*\
   !*** ./src/js/index.js ***!
   \*************************/
-/***/ (function() {
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 
-eval("throw new Error(\"Module build failed (from ../node_modules/eslint-loader/dist/cjs.js):\\nTypeError: Cannot read property 'getFormatter' of undefined\\n    at getFormatter (/Users/mornki/project/webpack/node_modules/eslint-loader/dist/getOptions.js:52:20)\\n    at getOptions (/Users/mornki/project/webpack/node_modules/eslint-loader/dist/getOptions.js:30:23)\\n    at Object.loader (/Users/mornki/project/webpack/node_modules/eslint-loader/dist/index.js:17:43)\");\n\n//# sourceURL=webpack:///./src/js/index.js?");
+eval("const json = __webpack_require__(/*! ../data.json */ \"./src/data.json\");\n\nfunction add(x, y) {\n  return x + y;\n}\n// 下一行eslint所有规则都失效（下一行不进行eslint检查）\n// eslint-disable-next-line\nconsole.log(add(2, 5));\n// eslint-disable-next-line\nconsole.log('data:', json);\n\n\n//# sourceURL=webpack:///./src/js/index.js?");
+
+/***/ }),
+
+/***/ "./src/data.json":
+/*!***********************!*\
+  !*** ./src/data.json ***!
+  \***********************/
+/***/ (function(module) {
+
+"use strict";
+eval("module.exports = {\"name\":1};\n\n//# sourceURL=webpack:///./src/data.json?");
 
 /***/ })
 
 /******/ 	});
 /************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	// This entry module doesn't tell about it's top-level declarations so it can't be inlined
-/******/ 	var __webpack_exports__ = {};
-/******/ 	__webpack_modules__["./src/js/index.js"]();
+/******/ 	// This entry module can't be inlined because the eval devtool is used.
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/js/index.js");
 /******/ 	
 /******/ })()
 ;

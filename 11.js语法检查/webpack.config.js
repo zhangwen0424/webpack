@@ -1,5 +1,6 @@
 const {resolve} = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const EslintWebpackPlugin = require("eslint-webpack-plugin");
 
 module.exports = {
   mode: 'development',
@@ -20,20 +21,28 @@ module.exports = {
               }
             airbnb --> eslint-config-airbnb-base  eslint-plugin-import eslint
       */
-      {
-        test: /\.js$/,
-        loader: 'eslint-loader',
-        exclude: /node_modules/,
-        options: {
-          // 自动修复eslint的错误
-          fix: true
-        }
-      }
+      // webpack4的用法
+      // {
+      //   test: /\.js$/,
+      //   loader: 'eslint-loader',
+      //   exclude: /node_modules/,
+      //   options: {
+      //     // 自动修复eslint的错误
+      //     fix: true
+      //   }
+      // }
     ]
   },
   plugins: [
+    // webpack 5
+    // 需要安装eslint eslint-config-airbnb-base eslint-plugin-import  eslint-webpack-plugin
+    new EslintWebpackPlugin({
+      fix: true,//自动修复
+      exclude: '/node_modules/',
+      // extensions: ['js', 'json', 'coffee'],
+    }),
     new HtmlWebpackPlugin({
       template: 'src/index.html'
-    })
+    }),
   ]
 }

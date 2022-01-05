@@ -588,9 +588,11 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.html'
     }),
+    // 抽离css
     new MiniCssExtractPlugin({
       filename: 'css/main.css'
     }),
+    // 压缩css
     new OptimizeCssAssetsWebpackPlugin(),
   ],
   devServer: {
@@ -602,9 +604,129 @@ module.exports = {
 }
 ```
 
-## js语法检查
+## [11.js语法检查](https://github.com/zhangwen0424/webpack/tree/master/11.js语法检查)
 
-## js兼容性处理
+webpack.config.js
+
+```js
+const {resolve} = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const EslintWebpackPlugin = require("eslint-webpack-plugin");
+
+module.exports = {
+  mode: 'development',
+  entry: './src/js/index.js',
+  output: {
+    filename: 'js/main.js',
+    path: resolve(__dirname, 'build'),
+  },
+  module: {
+    rules: [
+      /*
+        语法检查： eslint-loader  eslint
+          注意：只检查自己写的源代码，第三方的库是不用检查的
+          设置检查规则：
+            package.json中eslintConfig中设置~
+              "eslintConfig": {
+                "extends": "airbnb-base"
+              }
+            airbnb --> eslint-config-airbnb-base  eslint-plugin-import eslint
+      */
+      // webpack4的用法
+      // {
+      //   test: /\.js$/,
+      //   loader: 'eslint-loader',
+      //   exclude: /node_modules/,
+      //   options: {
+      //     // 自动修复eslint的错误
+      //     fix: true
+      //   }
+      // }
+    ]
+  },
+  plugins: [
+    // webpack 5
+    // 需要安装eslint eslint-config-airbnb-base eslint-plugin-import  eslint-webpack-plugin
+    new EslintWebpackPlugin({
+      fix: true,
+    }),
+    new HtmlWebpackPlugin({
+      template: 'src/index.html'
+    }),
+  ]
+}
+```
+
+## [12.js兼容性处理](https://github.com/zhangwen0424/webpack/tree/master/12.js兼容性处理)
+
+webpack.config.js
+
+```js 
+const { resolve } = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  mode: 'production',
+  entry: './src/js/index.js',
+  output: {
+    filename: 'js/main.js',
+    path: resolve(__dirname, 'build'),
+    clean: true,
+  },
+  module: {
+    rules: [
+      /*
+        js兼容性处理：babel-loader @babel/core 
+          1. 基本js兼容性处理 --> @babel/preset-env
+            问题：只能转换基本语法，如promise高级语法不能转换
+          2. 全部js兼容性处理 --> @babel/polyfill  
+            js中使用，import "@babel/polyfill"
+            问题：我只要解决部分兼容性问题，但是将所有兼容性代码全部引入，体积太大了~
+          3. 需要做兼容性处理的就做：按需加载  --> core-js
+      */  
+      {
+        test:/\.js$/,
+        exclude: /node_modules/,
+        loader: "babel-loader",
+        options: {
+          // 预设：指示babel做怎么样的兼容性处理
+          presets: [
+            [
+              '@babel/preset-env',
+              {
+                // 按需加载
+                useBuiltIns: 'usage',
+                // 指定core-js版本
+                corejs: '3.20.2',
+                // 指定兼容性做到哪个版本浏览器
+                targets: {
+                  chrome: '60',
+                  firefox: '60',
+                  ie: '9',
+                  safari: '10',
+                  edge: '17'
+                }
+              }
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  plugins:[
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    })
+  ],
+  devServer: {
+    static: resolve(__dirname, 'build'),
+    compress: true,
+    port: 3002,
+    // open:true,
+  }
+}
+```
+
 
 ## js压缩
 
@@ -648,7 +770,81 @@ module.exports = {
 }
 ```
 
-## 生产环境配置
+## [14.生产环境配置](https://github.com/zhangwen0424/webpack/tree/master/14.生产环境配置)
+
+webpack.config.js
+```js
+const { resolve } = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ESLintWebpackPlugin = require("eslint-webpack-plugin");
+const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+
+
+const commonCssLoader = [
+  MiniCssExtractPlugin.loader,
+  'css-loader',
+  {
+    loader: 'postcss-loader',
+    options:{
+      postcssOptions: {
+        plugins: ()=>[require("postcss-preset-env")]
+      }
+    }
+  }
+]
+module.exports = {
+  mode: 'production',
+  entry: './src/js/index.js',
+  output: {
+    filename: 'js/main.js',
+    path: resolve(__dirname, 'build'),
+    publicPath: 'media',
+    clean: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [...commonCssLoader]
+      },
+      {
+        test: /\.less$/,
+        use: [...commonCssLoader, 'less-loader']
+      },
+      /*
+        正常来讲，一个文件只能被一个loader处理。
+        当一个文件要被多个loader处理，那么一定要指定loader执行的先后顺序：
+          // 优先执行 enforce: 'pre'
+          先执行eslint 在执行babel
+      */
+     {
+       test: /\.html$/,
+       use: 'html-loader',
+     },
+    ]
+  },
+  plugins: [
+    new ESLintWebpackPlugin({
+      fix: true,
+      exclude: '/node_modules/'
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'css/main.css'
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    }),
+    new OptimizeCssAssetsPlugin(),
+  ],
+  devServer: {
+    static: resolve(__dirname, 'build'),
+    port: 30001,
+    compress: true,
+    // open:true
+  }
+}
+```
 
 ## webpack优化环境配置
 
@@ -678,7 +874,7 @@ module.exports = {
   * pwa
 ```
 
-## HMR热模块替换
+## [15.HMR热模块替换](https://github.com/zhangwen0424/webpack/tree/master/15.HMR热模块替换)
 
 webpack.config.js
 
@@ -691,15 +887,24 @@ webpack.config.js
       样式文件：可以使用HMR功能：因为style-loader内部实现了~
       js文件：默认不能使用HMR功能 --> 需要修改js代码，添加支持HMR功能的代码
         注意：HMR功能对js的处理，只能处理非入口js文件的其他文件。
+            if (module.hot) {
+              // 一旦 module.hot 为true，说明开启了HMR功能。 --> 让HMR功能代码生效
+              module.hot.accept('./print.js', function() {
+                // 方法会监听 print.js 文件的变化，一旦发生变化，其他模块不会重新打包构建。
+                // 会执行后面的回调函数
+                print();
+              });
+            }
       html文件: 默认不能使用HMR功能.同时会导致问题：html文件不能热更新了~ （不用做HMR功能）
         解决：修改entry入口，将html文件引入
+            entry: ['./src/js/index.js', './src/index.html'],
 */
 const { resolve } = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   mode: 'development',
-  entry: './src/js/index.js',
+  entry: ['./src/js/index.js', './src/index.html'],
   output: {
     filename: 'js/main.js',
     path: resolve(__dirname, 'build')
@@ -740,7 +945,114 @@ module.exports = {
   devServer: {
     static: resolve(__dirname, 'build'),
     compress: true,
-    port: 3002,
+    port: 3001,
+    open: true,
+    // 开启HMR功能
+    // 当修改了webpack配置，新配置要想生效，必须重新webpack服务
+    hot: true,
+  }
+}
+```
+
+
+## [16.source-map代码映射](https://github.com/zhangwen0424/webpack/tree/master/16.source-map代码映射)
+
+webpack.config.js
+
+```js
+/*
+  source-map: 一种 提供源代码到构建后代码映射 技术 （如果构建后代码出错了，通过映射可以追踪源代码错误）
+
+    [inline-|hidden-|eval-][nosources-][cheap-[module-]]source-map
+
+    source-map：外部
+      错误代码准确信息 和 源代码的错误位置
+    inline-source-map：内联
+      只生成一个内联source-map
+      错误代码准确信息 和 源代码的错误位置
+    hidden-source-map：外部
+      错误代码错误原因，但是没有错误位置
+      不能追踪源代码错误，只能提示到构建后代码的错误位置
+    eval-source-map：内联
+      每一个文件都生成对应的source-map，都在eval
+      错误代码准确信息 和 源代码的错误位置
+    nosources-source-map：外部
+      错误代码准确信息, 但是没有任何源代码信息
+    cheap-source-map：外部
+      错误代码准确信息 和 源代码的错误位置 
+      只能精确的行
+    cheap-module-source-map：外部
+      错误代码准确信息 和 源代码的错误位置 
+      module会将loader的source map加入
+
+    内联 和 外部的区别：1. 外部生成了文件，内联没有 2. 内联构建速度更快
+
+    开发环境：速度快，调试更友好
+      速度快(eval>inline>cheap>...)
+        eval-cheap-souce-map
+        eval-source-map
+      调试更友好  
+        souce-map
+        cheap-module-souce-map
+        cheap-souce-map
+
+      --> eval-source-map  / eval-cheap-module-souce-map
+
+    生产环境：源代码要不要隐藏? 调试要不要更友好
+      内联会让代码体积变大，所以在生产环境不用内联
+      nosources-source-map 全部隐藏
+      hidden-source-map 只隐藏源代码，会提示构建后代码错误信息
+
+      --> source-map / cheap-module-souce-map
+*/
+const { resolve } = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  mode: 'development',
+  entry: ['./src/js/index.js', './src/index.html'],
+  output: {
+    filename: 'js/main.js',
+    path: resolve(__dirname, 'build')
+  },
+  module: {
+    rules: [
+      {
+        // 处理css资源
+        test: /\.css/,
+        use: ['style-loader', 'css-loader']
+      },
+      {
+        // 处理less资源
+        test: /\.less/,
+        use: ['style-loader', 'css-loader', 'less-loader']
+      },
+      {
+        // 处理图片资源
+        test: /\.(jpg|png|gif)/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'imgs/[name].[hash:6][ext]'
+        }
+      },
+      {
+        // 处理html中img资源
+        test: /\.html/,
+        use: 'html-loader'
+      }
+    ]
+  },
+  devtool: 'eval-cheap-module-source-map',
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    })
+  ],
+  // 启动devServer指令为：npx webpack-dev-server
+  devServer: {
+    static: resolve(__dirname, 'build'),
+    compress: true,
+    port: 3001,
     // open: true,
     // 开启HMR功能
     // 当修改了webpack配置，新配置要想生效，必须重新webpack服务
@@ -749,3 +1061,203 @@ module.exports = {
 }
 ```
 
+## [17.oneOf只匹配一个规则](https://github.com/zhangwen0424/webpack/tree/master/17.oneOf只匹配一个规则)
+
+webpack.config.js
+
+```js
+const { resolve } = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  mode: 'development',
+  entry: ['./src/js/index.js', './src/index.html'],
+  output: {
+    filename: 'js/main.js',
+    path: resolve(__dirname, 'build')
+  },
+  module: {
+    rules: [
+      {
+        // 以下loader只会匹配一个
+        // 注意：不能有两个配置处理同一种类型文件
+        oneOf:[
+          {
+            // 处理css资源
+            test: /\.css/,
+            use: ['style-loader', 'css-loader']
+          },
+          {
+            // 处理less资源
+            test: /\.less/,
+            use: ['style-loader', 'css-loader', 'less-loader']
+          },
+        ]
+      },
+      {
+        // 处理图片资源
+        test: /\.(jpg|png|gif)/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'imgs/[name].[hash:6][ext]'
+        }
+      },
+      {
+        // 处理html中img资源
+        test: /\.html/,
+        use: 'html-loader'
+      }
+    ]
+  },
+  devtool: 'eval-cheap-module-source-map',
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    })
+  ],
+  // 启动devServer指令为：npx webpack-dev-server
+  devServer: {
+    static: resolve(__dirname, 'build'),
+    compress: true,
+    port: 3002,
+    open: true,
+    // 开启HMR功能
+    // 当修改了webpack配置，新配置要想生效，必须重新webpack服务
+    hot: true,
+  }
+}
+```
+
+
+## [18.缓存](https://github.com/zhangwen0424/webpack/tree/master/18.缓存)
+
+webpack.config.js
+
+```js
+const { resolve } = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+/*
+  缓存：
+    babel缓存
+      cacheDirectory: true
+      --> 让第二次打包构建速度更快
+    文件资源缓存
+      hash: 每次wepack构建时会生成一个唯一的hash值。
+        问题: 因为js和css同时使用一个hash值。
+          如果重新打包，会导致所有缓存失效。（可能我却只改动一个文件）
+      chunkhash：根据chunk生成的hash值。如果打包来源于同一个chunk，那么hash值就一样
+        问题: js和css的hash值还是一样的
+          因为css是在js中被引入的，所以同属于一个chunk
+      contenthash: 根据文件的内容生成hash值。不同文件hash值一定不一样    
+      --> 让代码上线运行缓存更好使用
+*/
+
+const commonCssLoader = [
+  MiniCssExtractPlugin.loader,
+  'css-loader',
+  {
+    loader: 'postcss-loader',
+    options: {
+      postcssOptions: {
+        plugins: ()=>[require("postcss-preset-env")]
+      }
+    }
+  }
+]
+module.exports = {
+  mode: 'production',
+  entry: './src/js/index.js',
+  output: {
+    filename: 'js/[name].[contenthash:5].js',
+    path: resolve(__dirname, 'build'),
+    clean: true,
+  },
+  module: {
+    rules: [
+      {
+        oneOf: [
+          {
+            test: /\.css$/,
+            use: [...commonCssLoader]
+          },
+          {
+            test: /\.less$/,
+            use: [...commonCssLoader, 'less-loader']
+          }
+        ]
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        options: {
+          presets:  [
+            [
+              '@babel/preset-env',
+              {
+                useBuiltIns: "usage",
+                corejs: {
+                  version:3
+                },
+                targets: {
+                  chrome: '60',
+                    firefox: '60',
+                    ie: '9',
+                    safari: '10',
+                    edge: '17'
+                }
+              }
+            ]
+          ],
+          // 开启babel缓存
+          // 第二次构建时，会读取之前的缓存
+          cacheDirectory: true
+        }
+      },
+      {
+        test: /\.html$/,
+        loader: 'html-loader'
+      }
+    ]
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash:5].css'
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+      }
+    }),
+    new OptimizeCssAssetsPlugin(),
+  ],
+}
+```
+server.js
+
+```js
+/*
+  服务器代码
+  启动服务器指令：
+    npm i nodemon -g
+    nodemon server.js
+
+    node server.js
+  访问服务器地址：
+    http://localhost:3000
+
+*/
+
+const express = require("express");
+
+const app = express();
+
+// express.static向外暴露静态资源
+// maxAge 资源缓存的最大时间，单位ms
+app.use(express.static('build', {maxAge:1000*3600}))
+app.listen(3002)
+```
